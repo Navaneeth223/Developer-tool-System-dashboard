@@ -1,0 +1,224 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-mono,monospace)}
+.r-root{padding:1rem 0;color:var(--text-primary)}
+.r-topbar{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 1rem;border-bottom:0.5px solid var(--border);margin-bottom:1rem}
+.r-logo{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;letter-spacing:0.04em;color:var(--text-primary)}
+.r-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--text-accent)}
+.r-badge{font-size:10px;padding:2px 7px;border-radius:3px;border:0.5px solid var(--border-accent);color:var(--text-accent);background:var(--bg-accent);font-family:var(--font-mono)}
+.r-actions{display:flex;gap:8px}
+.r-btn{display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 10px;border-radius:var(--radius);border:0.5px solid var(--border-strong);background:var(--surface-2);color:var(--text-secondary);cursor:pointer;font-family:var(--font-mono);transition:all 0.15s}
+.r-btn:hover{background:var(--surface-1);color:var(--text-primary)}
+.r-btn.primary{background:var(--fill-accent);color:#fff;border-color:transparent}
+.r-btn.primary:hover{opacity:0.9}
+.r-btn.danger{background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)}
+.r-btn.danger:hover{background:var(--fill-danger);color:#fff}
+.r-layout{display:grid;grid-template-columns:240px 1fr;gap:0;height:520px}
+.r-sidebar{border-right:0.5px solid var(--border);overflow-y:auto;padding:0.75rem 0}
+.r-sidebar-label{font-size:10px;color:var(--text-muted);letter-spacing:0.08em;padding:0 1rem 6px;text-transform:uppercase}
+.r-branch{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 1rem;cursor:pointer;border-left:2px solid transparent;color:var(--text-secondary);transition:all 0.12s}
+.r-branch:hover{background:var(--surface-1);color:var(--text-primary)}
+.r-branch.active{border-left-color:var(--fill-accent);background:var(--bg-accent);color:var(--text-accent)}
+.r-branch-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.r-divider{height:0.5px;background:var(--border);margin:10px 0}
+.r-main{display:flex;flex-direction:column;overflow:hidden}
+.r-timeline-header{display:flex;align-items:center;justify-content:space-between;padding:10px 1rem;border-bottom:0.5px solid var(--border);background:var(--surface-1)}
+.r-path{font-size:11px;color:var(--text-muted);font-family:var(--font-mono)}
+.r-path span{color:var(--text-secondary)}
+.r-filter{display:flex;gap:6px}
+.r-pill{font-size:11px;padding:3px 8px;border-radius:20px;border:0.5px solid var(--border);color:var(--text-muted);cursor:pointer;background:var(--surface-2);transition:all 0.12s}
+.r-pill:hover{color:var(--text-primary);border-color:var(--border-strong)}
+.r-pill.on{background:var(--fill-accent);color:#fff;border-color:transparent}
+.r-timeline{flex:1;overflow-y:auto;padding:0.5rem 0}
+.r-node{display:flex;align-items:flex-start;gap:0;padding:0 1rem;position:relative;cursor:pointer}
+.r-node:hover .r-card{border-color:var(--border-strong)}
+.r-node.selected .r-card{border-color:var(--border-accent);background:var(--bg-accent)}
+.r-spine{display:flex;flex-direction:column;align-items:center;width:28px;flex-shrink:0;padding-top:14px}
+.r-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-strong);background:var(--surface-2);z-index:1;flex-shrink:0;transition:all 0.15s}
+.r-dot.head{border-color:var(--fill-accent);background:var(--fill-accent)}
+.r-dot.danger{border-color:var(--border-danger);background:var(--bg-danger)}
+.r-dot.success{border-color:var(--border-success);background:var(--bg-success)}
+.r-line{width:1px;background:var(--border);flex:1;min-height:16px}
+.r-card{flex:1;margin:6px 0 6px 4px;padding:8px 10px;border-radius:8px;border:0.5px solid var(--border);background:var(--surface-2);transition:all 0.12s}
+.r-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.r-card-msg{font-size:12px;font-weight:500;color:var(--text-primary)}
+.r-card-time{font-size:10px;color:var(--text-muted)}
+.r-card-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.r-tag{font-size:10px;padding:1px 6px;border-radius:3px;font-family:var(--font-mono)}
+.r-tag.add{background:var(--bg-success);color:var(--text-success)}
+.r-tag.del{background:var(--bg-danger);color:var(--text-danger)}
+.r-tag.mod{background:var(--bg-warning);color:var(--text-warning)}
+.r-tag.sha{background:var(--surface-1);color:var(--text-muted);border:0.5px solid var(--border)}
+.r-hash{font-size:10px;color:var(--text-muted);font-family:var(--font-mono)}
+.r-detail{border-top:0.5px solid var(--border);background:var(--surface-1);padding:1rem;height:190px;overflow-y:auto;flex-shrink:0}
+.r-detail-title{font-size:11px;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px}
+.r-diff{font-family:var(--font-mono);font-size:11px;line-height:1.7;border-radius:6px;overflow:hidden;border:0.5px solid var(--border)}
+.r-diff-line{padding:1px 10px;display:flex;gap:8px}
+.r-diff-line.add{background:#1a2e1a;color:#6fdb6f}
+.r-diff-line.del{background:#2e1a1a;color:#db6f6f}
+.r-diff-line.ctx{background:var(--surface-2);color:var(--text-muted)}
+.r-diff-line .ln{opacity:0.4;width:24px;text-align:right;flex-shrink:0}
+.r-modal-bg{display:none;position:absolute;inset:0;background:rgba(0,0,0,0.45);z-index:10;align-items:center;justify-content:center;border-radius:8px}
+.r-modal-bg.open{display:flex}
+.r-modal{background:var(--surface-2);border:0.5px solid var(--border-strong);border-radius:12px;padding:1.5rem;width:340px;max-width:90%}
+.r-modal-h{font-size:14px;font-weight:500;margin-bottom:6px;color:var(--text-primary)}
+.r-modal-sub{font-size:12px;color:var(--text-secondary);margin-bottom:1.25rem;line-height:1.6}
+.r-modal-row{display:flex;gap:8px;justify-content:flex-end}
+.r-wrap{position:relative}
+.r-status-bar{display:flex;align-items:center;gap:12px;padding:5px 1rem;border-top:0.5px solid var(--border);font-size:11px;color:var(--text-muted)}
+.r-status-dot{width:6px;height:6px;border-radius:50%;background:var(--fill-success)}
+</style>
+<h2 class="sr-only">Retractor — undo/rollback system dashboard for tracking and reverting change history</h2>
+<div class="r-root">
+<div class="r-topbar">
+  <div class="r-logo">
+    <div class="r-logo-dot"></div>
+    RETRACTOR
+    <span class="r-badge">v0.9.4</span>
+  </div>
+  <div class="r-actions">
+    <button class="r-btn" onclick="openModal()"><i class="ti ti-player-skip-back" aria-hidden="true"></i> rollback</button>
+    <button class="r-btn primary"><i class="ti ti-git-branch" aria-hidden="true"></i> new branch</button>
+  </div>
+</div>
+<div class="r-wrap">
+<div class="r-layout">
+  <div class="r-sidebar">
+    <div class="r-sidebar-label">branches</div>
+    <div class="r-branch active" onclick="setBranch(this,'main')"><div class="r-branch-dot"></div> main</div>
+    <div class="r-branch" onclick="setBranch(this,'feat/api-v2')"><div class="r-branch-dot"></div> feat/api-v2</div>
+    <div class="r-branch" onclick="setBranch(this,'fix/auth-race')"><div class="r-branch-dot"></div> fix/auth-race</div>
+    <div class="r-divider"></div>
+    <div class="r-sidebar-label">snapshots</div>
+    <div class="r-branch" onclick="setBranch(this,'snap: pre-deploy')"><div class="r-branch-dot" style="background:var(--text-warning)"></div> pre-deploy</div>
+    <div class="r-branch" onclick="setBranch(this,'snap: stable-1.0')"><div class="r-branch-dot" style="background:var(--text-success)"></div> stable-1.0</div>
+    <div class="r-divider"></div>
+    <div class="r-sidebar-label">tags</div>
+    <div class="r-branch" onclick="setBranch(this,'v1.0.0')"><div class="r-branch-dot" style="background:var(--text-muted)"></div> v1.0.0</div>
+    <div class="r-branch" onclick="setBranch(this,'v0.9.0')"><div class="r-branch-dot" style="background:var(--text-muted)"></div> v0.9.0</div>
+  </div>
+  <div class="r-main">
+    <div class="r-timeline-header">
+      <span class="r-path"><span id="branch-path">main</span> · <span id="node-count">5 changesets</span></span>
+      <div class="r-filter">
+        <div class="r-pill on" onclick="toggleFilter(this)">all</div>
+        <div class="r-pill" onclick="toggleFilter(this)">+add</div>
+        <div class="r-pill" onclick="toggleFilter(this)">-del</div>
+        <div class="r-pill" onclick="toggleFilter(this)">~mod</div>
+      </div>
+    </div>
+    <div class="r-timeline" id="timeline">
+    </div>
+    <div class="r-detail" id="detail-panel">
+      <div class="r-detail-title" id="detail-title">select a changeset to inspect</div>
+      <div id="diff-area"></div>
+    </div>
+    <div class="r-status-bar">
+      <div class="r-status-dot"></div>
+      <span>tracking active</span>
+      <span style="margin-left:auto;font-family:var(--font-mono)">HEAD → <span id="head-sha">a3f9c12</span></span>
+    </div>
+  </div>
+</div>
+<div class="r-modal-bg" id="modal">
+  <div class="r-modal">
+    <div class="r-modal-h">Confirm rollback</div>
+    <div class="r-modal-sub" id="modal-msg">Roll back to <strong id="modal-target">—</strong>? Changes after this point will be staged for retraction. This cannot be undone.</div>
+    <div class="r-modal-row">
+      <button class="r-btn" onclick="closeModal()">cancel</button>
+      <button class="r-btn danger" onclick="doRollback()"><i class="ti ti-player-skip-back" aria-hidden="true"></i> confirm rollback</button>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+const NODES = [
+  {sha:"a3f9c12",msg:"feat: add retry middleware to API client",time:"just now",tags:[{t:"add",l:"+3 files"},{t:"mod",l:"~2 files"}],diff:[{t:"ctx",n:22,code:"  const client = new APIClient();"},{t:"add",n:23,code:"+ client.use(retryMiddleware({ attempts: 3 }));"},{t:"add",n:24,code:"+ client.use(timeoutMiddleware(5000));"},{t:"ctx",n:25,code:"  return client;"}],head:true},
+  {sha:"7b2e44a",msg:"refactor: extract auth token resolver",time:"12 min ago",tags:[{t:"mod",l:"~1 file"},{t:"del",l:"-48 lines"}],diff:[{t:"del",n:14,code:"- function getToken() { return localStorage.getItem('tok'); }"},{t:"add",n:14,code:"+ import { resolveToken } from './auth/resolver';"},{t:"ctx",n:15,code:"  // unified token strategy"},{t:"add",n:16,code:"+ const token = await resolveToken(context);"}],head:false},
+  {sha:"c90d3b8",msg:"fix: race condition in session refresh",time:"38 min ago",tags:[{t:"mod",l:"~1 file"},{t:"add",l:"+12 lines"}],diff:[{t:"ctx",n:88,code:"  // session refresh"},{t:"del",n:89,code:"- if (!session) refreshSession();"},{t:"add",n:89,code:"+ if (!session) await refreshSession();"},{t:"add",n:90,code:"+ await sessionLock.acquire();"},{t:"ctx",n:91,code:"  return session;"}],head:false,alert:true},
+  {sha:"41fa209",msg:"chore: update deps — axios 1.6.2, zod 3.22",time:"2 hr ago",tags:[{t:"mod",l:"package.json"},{t:"mod",l:"lock file"}],diff:[{t:"del",n:8,code:'-   "axios": "1.5.0",'},{t:"add",n:8,code:'+   "axios": "1.6.2",'},{t:"del",n:9,code:'-   "zod": "3.21.0",'},{t:"add",n:9,code:'+   "zod": "3.22.4",'}],head:false},
+  {sha:"e3812bd",msg:"init: bootstrap project with Vite + React",time:"yesterday",tags:[{t:"add",l:"+94 files"}],diff:[{t:"add",n:1,code:"+ import React from 'react';"},{t:"add",n:2,code:"+ import ReactDOM from 'react-dom/client';"},{t:"add",n:3,code:"+ import App from './App';"},{t:"add",n:4,code:"+ ReactDOM.createRoot(document.getElementById('root')).render(<App />);"}],head:false},
+];
+
+let selectedIdx = 0;
+let rollbackTarget = null;
+
+function renderTimeline(){
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = NODES.map((n,i)=>`
+    <div class="r-node ${i===selectedIdx?'selected':''}" onclick="select(${i})">
+      <div class="r-spine">
+        <div class="r-dot ${n.head?'head':n.alert?'danger':''}"></div>
+        ${i<NODES.length-1?'<div class="r-line"></div>':''}
+      </div>
+      <div class="r-card">
+        <div class="r-card-top">
+          <div class="r-card-msg">${n.msg}</div>
+          <div class="r-card-time">${n.time}</div>
+        </div>
+        <div class="r-card-meta">
+          ${n.tags.map(t=>`<span class="r-tag ${t.t}">${t.l}</span>`).join('')}
+          <span class="r-hash">${n.sha}</span>
+          ${n.head?'<span class="r-tag add">HEAD</span>':''}
+          ${n.alert?'<span class="r-tag del">race-fixed</span>':''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDetail(idx){
+  const n = NODES[idx];
+  document.getElementById('detail-title').textContent = `diff · ${n.sha} — ${n.msg}`;
+  document.getElementById('diff-area').innerHTML = `
+    <div class="r-diff">
+      ${n.diff.map(l=>`<div class="r-diff-line ${l.t}"><span class="ln">${l.n}</span><span>${escHtml(l.code)}</span></div>`).join('')}
+    </div>`;
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function select(idx){
+  selectedIdx = idx;
+  rollbackTarget = NODES[idx];
+  renderTimeline();
+  renderDetail(idx);
+}
+
+function setBranch(el, name){
+  document.querySelectorAll('.r-branch').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('branch-path').textContent = name;
+}
+
+function toggleFilter(el){
+  document.querySelectorAll('.r-pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function openModal(){
+  const t = rollbackTarget || NODES[selectedIdx];
+  document.getElementById('modal-target').textContent = `${t.sha} — "${t.msg}"`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+
+function doRollback(){
+  closeModal();
+  const idx = selectedIdx;
+  NODES.splice(0, idx);
+  selectedIdx = 0;
+  document.getElementById('head-sha').textContent = NODES[0].sha;
+  document.getElementById('node-count').textContent = NODES.length + ' changeset' + (NODES.length!==1?'s':'');
+  NODES[0].head = true;
+  renderTimeline();
+  renderDetail(0);
+}
+
+renderTimeline();
+renderDetail(0);
+</script>
